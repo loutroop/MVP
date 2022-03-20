@@ -11,34 +11,32 @@ namespace MVP
 {
     public class EventHandlers
     {
-        public static Dictionary<Player, int> KillCounts = new Dictionary<Player, int>();
+        public static Dictionary<Player, int> Points = new Dictionary<Player, int>();
         public void OnWaiting()
         {
-            KillCounts.Clear();
+            Points.Clear();
         }
         public void OnRoundEnd(RoundEndEvent ev)
         {
-            AddValues();
             foreach (var player in Player.List)
             {
-                Timing.CallDelayed(Plugin.CustomConfig.MonmentToShow, () => player.ShowHint(Plugin.CustomConfig.MVP_Message.Replace("{mvpname}", GetMVPPlayer().Nickname), 2));
-                foreach (var data in Plugin.CustomConfig.RecordDatas)
-                {
-                    if (data.ContainsKey(GetMVPPlayer().UserId)) new Audio(data[GetMVPPlayer().UserId].Item1, data[GetMVPPlayer().UserId].Item2, data[GetMVPPlayer().UserId].Item3);
-                }
+                Timing.CallDelayed(Plugin.CustomConfig.MonmentToShow, () => player.ShowHint(Plugin.CustomConfig.MVP_Message.Replace("{mvpname}", GetMVPPlayer().Nickname), false, 2));
+                if (Plugin.CustomConfig.RecordDatas.ContainsKey(GetMVPPlayer().UserId)) new Audio(Plugin.CustomConfig.RecordDatas[GetMVPPlayer().UserId].Item1, Plugin.CustomConfig.RecordDatas[GetMVPPlayer().UserId].Item2, Plugin.CustomConfig.RecordDatas[GetMVPPlayer().UserId].Item3);
             }
         }
-       public Player GetMVPPlayer()
+       public static Player GetMVPPlayer()
         {
-            return KillCounts.Max().Key;
+            return Points.Max().Key;
         }
-        private static IEnumerator<float> AddValues()
+        public void Join(JoinEvent ev)
         {
-            yield return Timing.WaitForSeconds(0.5f);
-            foreach (var player in Player.List)
-            {
-                KillCounts.Add(player, player.KillsCount);
-            }
-        } 
+            Points.Add(ev.Player, 0);
+        }
+        public void Dies(DiesEvent ev)
+        {
+            if (ev.Target.Team == Team.SCP && ev.Target.Role != RoleType.Scp0492) Points[ev.Killer] += 5;
+            else Points[ev.Killer] += 1;
+        }
+        
     }
 }

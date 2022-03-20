@@ -12,12 +12,9 @@ namespace MVP
         public string Name { get; set; } = nameof(MVP);
         public float MonmentToShow { get; set; } = 1.5f;
         public string MVP_Message { get; set; } = "<voffset=15em>{mvpname} is the MVP in this round<voffset>";
-        public List<Dictionary<string, Tuple<string, byte, bool>>> RecordDatas { get; set; } = new List<Dictionary<string, Tuple<string, byte, bool>>>()
+        public Dictionary<string, Tuple<string, byte, bool>> RecordDatas { get; set; } = new Dictionary<string, Tuple<string, byte, bool>>()
         {
-            new Dictionary<string, Tuple<string, byte, bool>>()
-            {
-                { "Example", new Tuple<string, byte, bool>("", 10, true) }
-            }
+           { "Example", new Tuple<string, byte, bool>("", 10, true) }
         };
     }
 }
